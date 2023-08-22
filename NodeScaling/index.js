@@ -6,10 +6,55 @@ const fs = require("node:fs/promises");
 	const RENAME_FILE = "rename a file";
 	const ADD_TO_FILE = "add to a file";
 
+	const fileHandle = await fs.open("./watch.txt", "r");
+
+	let addedContent;
+
+	const addToFile = async (path, content) => {
+		if (addedContent === content) return;
+		try {
+			const fileHandle = await fs.open(path, "a");
+			fileHandle.write(content);
+			addedContent = content;
+			console.log("The content was added successfully.");
+		} catch (e) {
+			console.log("An error occurred while removing the file: ");
+			console.log(e);
+		}
+	};
+	const renameFile = async (oldPath, newPath) => {
+		try {
+			await fs.rename(oldPath, newPath);
+			console.log("The file was successfully renamed.");
+		} catch (e) {
+			if (e.code === "ENOENT") {
+				console.log(
+					"No file at this path to rename, or the destination doesn't exist."
+				);
+			} else {
+				console.log("An error occurred while removing the file: ");
+				console.log(e);
+			}
+		}
+	};
+	const deleteFile = async (path) => {
+		try {
+			await fs.unlink(path);
+			console.log("The file was successfully removed.");
+		} catch (e) {
+			if (e.code === "ENOENT") {
+				console.log("No file at this path to remove.");
+			} else {
+				console.log("An error occurred while removing the file: ");
+				console.log(e);
+			}
+		}
+	};
+
 	async function CreateAFile(path) {
 		try {
-			//trying to check if the file already exists
 			const fileHandle = await fs.open(path, "r");
+			//trying to check if the file already exists
 			fileHandle.close();
 			console.log(`file already exists`);
 
@@ -42,36 +87,33 @@ const fs = require("node:fs/promises");
 		//get the data by accessing buffer
 		const command = buff.toString("utf-8");
 
-		//to create a file
-		if (command.includes("create a file")) {
+		//create a file to created.txt
+		if (command.includes(CREATE_FILE)) {
 			const filePath = command.substring(CREATE_FILE.length + 1);
 			//arg gives the starting index and since no end arg is provided, it copies till the end
-			console.log(filePath);
-
 			CreateAFile(filePath);
 		}
 
 		//to delete a file
 		if (command.includes(DELETE_FILE)) {
 			const filePath = command.substring(DELETE_FILE.length + 1);
-			console.log(filePath);
-			await fs.unlink(filePath, (err) => {
-				if (err) throw err;
-				console.log(`file was successfully deleted.`);
-			});
+			deleteFile(filePath);
 		}
 
 		//to renama a file
 		if (command.includes(RENAME_FILE)) {
-			const filePath = command.substring(RENAME_FILE.length + 1);
-			await fs.rename(filePath, __dirname + "/" + "renamed.txt");
+			const __indx = command.indexOf(" to ");
+			const oldFilePath = command.substring(RENAME_FILE.length + 1, __indx);
+			const newFilePath = command.substring(__indx + 4);
+			renameFile(oldFilePath, newFilePath);
 		}
 
 		//to add to the file path
 		if (command.includes(ADD_TO_FILE)) {
-			const path = command.substring(ADD_TO_FILE.length + 1);
-			await fs.appendFile(path, "This is going to be huge thing");
-			console.log(`file is successfully appended`);
+			const _idx = command.indexOf(" this content: ");
+			const filePath = command.substring(ADD_TO_FILE.length + 1, _idx);
+			const content = command.substring(_idx + 15);
+			addToFile(filePath, content);
 		}
 	});
 
