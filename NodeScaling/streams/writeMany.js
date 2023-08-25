@@ -1,20 +1,22 @@
-const fs = require("node:fs/promises");
+const fs = require("node:fs");
 
 /* 
 write to a file a content and write one million times.
 */
 (async () => {
-	//to perform read or write or any operation we need to open a file
+	console.time(`writeMany`);
 
-	console.time("timeMany");
-	const file = await fs.open("./test.txt", "w");
-	for (let i = 0; i < 10000; i++) {
-		await file.write(` ${i} `);
-	}
+	fs.open("ark.txt", "w", (err, fd) => {
+		console.log(`ark.txt id number  is ${fd}`);
+		fs.writeSync(fd, "just classifield");
+	});
 
-	console.timeEnd("timeMany");
-	await file.close();
-	console.log(`all code lines were executed.`);
+	fs.open("test.txt", "w", (err, fd) => {
+		console.log(fd);
+		for (let i = 0; i < 1000; i++) {
+			fs.writeSync(fd, ` ${i} `);
+		}
+
+		console.timeEnd("writeMany");
+	});
 })();
-
-
