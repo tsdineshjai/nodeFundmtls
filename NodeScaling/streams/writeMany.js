@@ -1,22 +1,28 @@
-const fs = require("node:fs");
+const fs = require("node:fs/promises");
 
-/* 
-write to a file a content and write one million times.
-*/
 (async () => {
 	console.time(`writeMany`);
+	const fileHandler = await fs.open("test.txt", "w");
 
-	fs.open("ark.txt", "w", (err, fd) => {
-		console.log(`ark.txt id number  is ${fd}`);
-		fs.writeSync(fd, "just classifield");
-	});
+	const stream = fileHandler.createWriteStream();
 
-	fs.open("test.txt", "w", (err, fd) => {
-		console.log(fd);
-		for (let i = 0; i < 1000; i++) {
-			fs.writeSync(fd, ` ${i} `);
+	for (let i = 0; i < 1000000; i++) {
+		const buff = Buffer.from(` ${i} `, "utf-8");
+
+		/* 
+		this method will return false when the internal buffer gets filled up to its max
+		will return true if it still has some space to fill.
+		we are supposed to wait for the buffer to get flushed and ready
+		before we perform the write operation. 		
+		*/
+		if (stream.write(buff) === true) {
+			stream.write(buff);
+		} else {
+			stream.on("drain", () => {
+				stream.write(buff);
+			});
 		}
+	}
 
-		console.timeEnd("writeMany");
-	});
+	console.timeEnd(`writeMany`);
 })();
