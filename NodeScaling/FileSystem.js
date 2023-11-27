@@ -96,3 +96,6 @@ readableStream.on("data", (chunk) => {
 readableStream.on("close", () => {
 	console.log(`the stream was closed automatically`);
 });
+
+/* PIPES: connects the readble stream to writable stream , this enables 
+automatically listening to the data event*/
