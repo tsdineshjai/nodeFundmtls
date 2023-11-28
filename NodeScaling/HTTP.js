@@ -1,3 +1,4 @@
+//creating a server and listening to it
 const http = require("node:http");
 
 const server = http.createServer((req, res) => {
