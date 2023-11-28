@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+      .container {
+        height: 100%;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+
+      }
+
+      .signup {
+        height: fit-content;
+        width: 500px;
+        display: flex;
+        justify-content: center;
+        gap: 0.75rem;
+        flex-direction: column;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 5rem;
+        padding: 0.5rem;
+        border-radius: 23px;
+      }
+
+      .signup header {
+        text-align: center;
+        font-weight: bolder;
+        font-size: larger;
+      }
+
+      .button {
+        text-align: center;
+        padding: 0.5rem;
+        border-radius: 11px;
+        color: white;
+        text-transform: uppercase;
+        width: 100%;
+        border: none;
+
+      }
+
+      .markup {
+        margin-top: 1.5rem;
+        background-color: rgb(40, 38, 38);
+      }
+
+      input {
+        border: none;
+        padding: 0.5rem;
+        border: none;
+        border-radius: 11px;
+        background-color: rgba(106, 90, 205,0.05);
+        color: rgb(73, 70, 70);
+
+
+      }
+
+      .button.google {
+        background-color: rgb(149, 2, 2);
+        color: white;
+      }
+
+      .small {
+        color: blueviolet;
+      }
+
+      button:hover {
+        cursor: pointer;
+        opacity: 80%;
+      }
+
+      .small:hover {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <div class="container">
+      <div class="signup">
+        <header>Sign Up</header>
+        <input type="text" placeholder="username">
+        <input type="text" placeholder="email">
+        <input type="text" placeholder="password">
+        <button class="button markup">Sign Up</button>
+        <button class="button google">Continue with Google</button>
+        <small>Have an account? <span class="small">Sign in</span></small>
+      </div>
+
+    </div>
+
+  </body>
+
+</html>

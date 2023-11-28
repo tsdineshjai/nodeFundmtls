@@ -1,18 +1,37 @@
 const http = require("node:http");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const server = http.createServer((req, res) => {
-	//you are writing to the response header.
-	res.writeHead(200, "connection is trying to happen", {
-		"Content-type": "application/json",
-	});
+	if (req.url === "/") {
+		res.writeHead(200, "home page", {
+			"Content-type": "text/plain",
+		});
 
-	const obj = {
-		message: "connectio is succesful",
-		capability:
-			"you have the capabilty too do things and you will disiciplined and follow time schedulel",
-	};
+		res.end("This is the home page");
+	}
 
-	res.end(JSON.stringify(obj));
+	if (req.url == "/disicpline") {
+		res.writeHead(200, "this is the displcine page", {
+			"Content-type": "text/html",
+		});
+
+		res.end(" <h1> Discipline gets you everything </h1>");
+	}
+
+	if (req.url == "/json") {
+		res.writeHead(200, {
+			"Content-type": "application/json",
+		});
+
+		res.end(
+			JSON.stringify({
+				message: "this content type is applicaiton/json",
+				discipline:
+					"discpline gets you everythign and there is nothing in the world that yu are not capable of ",
+			})
+		);
+	}
 });
 
 server.listen("3000", () => {
