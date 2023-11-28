@@ -1,20 +1,15 @@
-const eventsEmitter = require("node:events");
+const fs = require("node:fs/promises");
 
-class Events extends eventsEmitter {}
-//extendint the class
+(async () => {
+	console.time("writeMany");
 
-const EventObject = new Events();
-//institiating a class
+	const file = await fs.open("success.txt", "w");
 
-EventObject.on("hello", () => {
-	console.log(`this callback was trigerred`);
-});
+	const stream = file.createWriteStream();
 
-/* wwhen this function was invoked, the callback gets added to a master object with 
-the label of the event 
-*/
-
-EventObject.emit("hello");
-/* this emits the hello event, there by triggerring the relevant callback associated with this event
-in the master object and it doesnt remove the callback function once it is invoked.
-*/
+	for (let i = 0; i < 1000; i++) {
+		const buff = Buffer.from(`${i}`, "utf-8");
+		stream.write(buff);
+	}
+	console.timeEnd("writeMany");
+})();
