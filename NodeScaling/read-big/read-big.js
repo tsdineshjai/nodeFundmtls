@@ -1,25 +1,18 @@
-// const fs = require("node:fs/promises");
+const fs = require("node:fs/promises");
 
-// //opening a file using Promises
-
-// (async () => {
-//   const file = await fs.open("./test.txt", "r");
-
-//   const readableStream = file.createReadStream();
-
-//   readableStream.on("data", (chunk) => {
-//     console.log(chunk);
-//   });
-// })();
-
-/* opening a readable stream using callback API */
-
-const fs = require("node:fs");
+//opening a file using Promises
+//try to read from a file and copy into the destionation
 
 (async () => {
-	const fileHandle = fs.createReadStream("./test.txt", "utf-8");
+  //created a readable stream
+	const rFile = await fs.open("./source.txt", "r");
+	const readableStream = rFile.createReadStream();
 
-	fileHandle.on("data", (chunk) => {
-		console.log(chunk);
+	//creating a writable stream
+	const wFile = fs.open("./destination.txt", "w");
+	const writableDataStream = (await wFile).createWriteStream();
+
+	readableStream.on("data", (chunk) => {
+		writableDataStream.write(chunk);
 	});
 })();
