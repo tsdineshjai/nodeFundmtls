@@ -11,18 +11,26 @@ const fs = require("node:fs/promises");
 	const readableStream = rFile.createReadStream();
 
 	//creating a writable stream
-	const wFile = fs.open("./destination.txt", "w");
-	const writeStream = (await wFile).createWriteStream();
+	const wFile = await fs.open("./destination.txt", "w");
+	const writeStream = wFile.createWriteStream();
 
 	readableStream.on("data", (chunk) => {
 		/*    writeStream.write(chunk) will return false if the internal buffer inside the stream object gets full
 		and it needs to be flushed out to be ready for next batch   */
 
-		if (!writeStream.write(chunk)) {
-			readableStream.pause();
-			//The readable.pause() method will cause a stream in flowing mode to stop
-			//emitting 'data' events, switching out of flowing mode
-		}
+		const numbers = chunk.toString("utf-8").split(" ");
+		let filteredNum = numbers.filter((ele) => ele !== "");
+		filteredNum.forEach((num) => {
+			num = Number(num);
+			if (num % 2 === 0) {
+				if (!writeStream.write(" " + num + " ")) {
+					//if condition returns true means buffer is full, hence returns false , ie !fase --> true
+					readableStream.pause();
+					//The readable.pause() method will cause a stream in flowing mode to stop
+					//emitting 'data' events, switching out of flowing mode
+				}
+			}
+		});
 	});
 
 	//drain will be emitted once the data is full in buffer and its flushes out after it copies into the target.
@@ -33,8 +41,8 @@ const fs = require("node:fs/promises");
 
 	console.timeEnd("process");
 
-	rFile.close();
-	wFile.close();
+	// rFile.close();
+	// wFile.close();
 })();
 /* 
 sequence of events
