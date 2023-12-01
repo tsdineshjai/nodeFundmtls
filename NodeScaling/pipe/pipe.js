@@ -38,15 +38,51 @@
 // 	console.timeEnd(`pipe`);
 // })();
 
+// const fs = require("node:fs/promises");
+
+// (async () => {
+// 	console.time("pipe");
+// 	/*
+// 	pefromance:  18.345ms
+// 	*/
+// 	const readFile = await fs.open("./test.txt", "r");
+// 	const writeFile = await fs.open("./destinationPipe.txt", "w");
+
+// 	const readStream = readFile.createReadStream();
+// 	const writeStream = writeFile.createWriteStream();
+
+// 	readStream.pipe(writeStream);
+// 	readStream.unpipe(writeStream);
+//The readable.unpipe() method detaches a Writable stream previously attached using the pipe method.
+// 	console.log(readStream._readableState.flowing);
+// 	readStream.pipe(writeStream);
+// 	console.log(readStream._readableState.flowing);
+// 	readStream.on("end", () => {
+// 		console.timeEnd("pipe");
+// 	});
+//pipes establishes a chain to a writableStream/destination should always be writable stream
+//pipe gonna read the chunks from the readStream and write them into desteination.
+// })();
+
+const { pipeline } = require("node:stream");
+
 const fs = require("node:fs/promises");
 
 (async () => {
+	console.time("pipe");
 	const readFile = await fs.open("./test.txt", "r");
 	const writeFile = await fs.open("./destinationPipe.txt", "w");
 
 	const readStream = readFile.createReadStream();
 	const writeStream = writeFile.createWriteStream();
 
-	readStream.pipe(writeStream);
-	//pipes establishes a chain to a writableStream/destination should always be writable stream
+	pipeline(readStream, writeStream, (err) => {
+		if (err) {
+			console.error("Pipeline failed.", err);
+		} else {
+			console.log("Pipeline succeeded.");
+		}
+	});
+	
+
 })();
