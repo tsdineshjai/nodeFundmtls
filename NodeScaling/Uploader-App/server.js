@@ -1,37 +1,42 @@
-const net = require("node:net");
+const net = require("net");
 const fs = require("node:fs/promises");
 
-//if promises you should use async and await
+const server = net.createServer(() => {});
 
-//create a server
+let fileHandle, fileWriteStream;
 
-let fileHandle, writeStream;
+server.on("connection", (socket) => {
+	console.log("New connection!");
 
-const server = net.createServer({ host: "::1", port: 5050 }, async (socket) => {
-	//this callback will automatically listen for "connection" evnt and will incoke this cb once there is a conn
-	console.log(`connection has been established`);
-	//opening the target file to write into
-	fileHandle = await fs.open("./storage/destination.md", "w");
+	socket.on("data", async (data) => {
+		if (!fileHandle) {
+			socket.pause(); // pause further receiving data from the client
+			fileHandle = await fs.open(`storage/test.txt`, "w");
+			fileWriteStream = fileHandle.createWriteStream(); // the stream to write to
 
-	//set up a writing stream to write the data into the destination
-	writeStream = fileHandle.createWriteStream();
+			// Writing to our destination file, discard the headers
+			fileWriteStream.write(data);
 
-	socket.on("data", (chunk) => {
-		writeStream.write(chunk);
+			socket.resume(); // resume receiving data from the client after first batch data is written
+			fileWriteStream.on("drain", () => {
+				socket.resume();
+			});
+		} else {
+			if (!fileWriteStream.write(data)) {
+				socket.pause();
+			}
+		}
 	});
 
+	// This end event happens when the client.js file ends the socket
 	socket.on("end", () => {
 		fileHandle.close();
-		console.log(`write processing was finished`);
+		fileHandle = undefined;
+		fileWriteStream = undefined;
+		console.log("Connection ended!");
 	});
-
-	socket.on("error", () => {
-		console.log(`client has disconnected`);
-	});
-  //this cb listeere will get invoked once client press Ctrl + C to disconnect.
 });
 
-//listening to the server
 server.listen(5050, "::1", () => {
-	console.log(`server is up and running`, server.address());
+	console.log("Uploader server opened on", server.address());
 });
