@@ -7,11 +7,13 @@ let fileHandle, fileWriteStream;
 
 server.on("connection", (socket) => {
 	console.log("New connection!");
-
 	socket.on("data", async (data) => {
 		if (!fileHandle) {
 			socket.pause(); // pause further receiving data from the client
-			fileHandle = await fs.open(`storage/test.txt`, "w");
+
+			const fileName = data.subarray(0).toString("utf-8");
+
+			fileHandle = await fs.open(`storage/${fileName}`, "w");
 			fileWriteStream = fileHandle.createWriteStream(); // the stream to write to
 
 			// Writing to our destination file, discard the headers
