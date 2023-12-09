@@ -2,6 +2,22 @@ const net = require("net");
 const fs = require("node:fs/promises");
 const path = require("node:path");
 
+const clearLine = (dir) => {
+	return new Promise((resolve, reject) => {
+		process.stdout.clearLine(dir, () => {
+			resolve();
+		});
+	});
+};
+
+const moveCursor = (dx, dy) => {
+	return new Promise((resolve, reject) => {
+		process.stdout.moveCursor(dx, dy, () => {
+			resolve();
+		});
+	});
+};
+
 const socket = net.createConnection({ host: "::1", port: 5050 }, async () => {
 	const filePath = process.argv[2];
 	const fileName = path.basename(filePath);
@@ -9,12 +25,28 @@ const socket = net.createConnection({ host: "::1", port: 5050 }, async () => {
 	const file = `${fileName}`;
 	const fileHandle = await fs.open(filePath, "r");
 	const fileReadStream = fileHandle.createReadStream(); // the stream to read from
+	const fileSize = (await fileHandle.stat()).size;
+
+	let uploadedPercentage = 0;
+	let bytesUploaded = 0;
 
 	socket.write(file);
+
+	console.log(); // to get a nice log for the progress percentage
+
 	// Reading from the source file
-	fileReadStream.on("data", (data) => {
+	fileReadStream.on("data", async (data) => {
 		if (!socket.write(data)) {
 			fileReadStream.pause();
+		}
+
+		bytesUploaded += data.length;
+		let newPercentage = Math.floor(bytesUploaded / fileSize) * 100;
+		if (uploadedPercentage != newPercentage) {
+			uploadedPercentage = newPercentage;
+			await moveCursor(0, -1);
+			await clearLine(0);
+			console.log(`Uploading : ${uploadedPercentage}%`);
 		}
 	});
 
@@ -24,7 +56,7 @@ const socket = net.createConnection({ host: "::1", port: 5050 }, async () => {
 
 	fileReadStream.on("end", () => {
 		console.log("The file was successfully uploaded!");
-		socket.end();
-		fileHandle.close();
+		// socket.end();
+		// fileHandle.close();
 	});
 });
