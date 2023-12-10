@@ -11,7 +11,6 @@ server.on("request", (request, response) => {
 	console.log(request.method);
 	console.log(request.url);
 	console.log(request.headers);
-	console.log(request.body);
 
 	//this is why we have to listen to body  (request.body) like how we listen for a readig stream
 
