@@ -1,12 +1,11 @@
 const http = require("node:http");
 
-const keepAliveHttpAgent = http.Agent({ keepAlive: true });
+const keepAliveHttpAgent = new http.Agent({ keepAlive: true });
 
 const client = http.request(
-	"http:localhost:8050",
 	{
 		agent: keepAliveHttpAgent,
-		host: "http:localhost:8050",
+		hostname: "localhost",
 		method: "POST",
 		path: "/game",
 		port: 8050,
@@ -18,6 +17,12 @@ const client = http.request(
 	(res) => {
 		console.log(`STATUS: ${res.statusCode}`);
 		console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+
+		//for response body we cant do like how its accessed above
+		//we have to listen like a streawm
+		res.on("data", (chunk) => {
+			console.log(chunk.toString("utf-8"));
+		});
 	}
 );
 
@@ -28,5 +33,10 @@ client.on("error", (e) => {
 //returne client is duplex stream
 
 client.write(JSON.stringify({ mode: "i am in alpha mindset always" }));
+client.write(
+	JSON.stringify({
+		mode: "i am in hyperactive hyper energetic hyper positive hyper calm hype happy",
+	})
+);
 
 client.end();

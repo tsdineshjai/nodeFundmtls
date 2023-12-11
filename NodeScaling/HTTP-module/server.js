@@ -11,12 +11,20 @@ server.on("request", (request, response) => {
 	console.log(request.method);
 	console.log(request.url);
 	console.log(request.headers);
-
 	//this is why we have to listen to body  (request.body) like how we listen for a readig stream
 
 	request.on("data", (chunk) => {
 		console.log(chunk.toString("utf-8"));
 	});
+
+	const body = "hello world";
+
+	response
+		.writeHead(200, "well done the proecss is a scuces", {
+			"Content-Length": Buffer.byteLength(body),
+			"Content-Type": "text/plain",
+		})
+		.end(body);
 });
 
 server.listen(8050, () => {
