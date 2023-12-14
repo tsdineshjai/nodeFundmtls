@@ -8,11 +8,18 @@ server.on("request", async (request, response) => {
 	console.log(request.url, request.method);
 	if (request.url === "/" && request.method === "GET") {
 		const readFile = await fs.open("./public/index.html", "r");
-
 		//setting a stream is ideal when dealing with large file in size to gradual buffering.
 
 		const readStream = readFile.createReadStream();
+		//using pipe to read the conents from readstream and put into the target
+		//here we are directly sending the content to the response object. It can render.
+		readStream.pipe(response);
+	}
+	if (request.url === "/styles.css" && request.method === "GET") {
+		const readFile = await fs.open("./public/styles.css", "r");
+		//setting a stream is ideal when dealing with large file in size to gradual buffering.
 
+		const readStream = readFile.createReadStream();
 		//using pipe to read the conents from readstream and put into the target
 		//here we are directly sending the content to the response object. It can render.
 		readStream.pipe(response);
