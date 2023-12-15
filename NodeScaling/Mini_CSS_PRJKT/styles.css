@@ -1,0 +1,57 @@
+:root {
+  --black: #282828;
+  --blue: #2892f9;
+  --red: #fb2f27;
+  --yellow: #fdfe29;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.rings {
+  position: relative;
+}
+
+.ring {
+  border-radius: 50%;
+  height: 300px;
+  width: 300px;
+  border: none;
+  position: absolute;
+  top: 50%;
+  transform: translate(0%, -50%)
+}
+
+.ring-1 {
+  width: 200px;
+  height: 200px;
+  background-color: var(--black);
+}
+
+.ring-2 {
+  background-color: var(--blue);
+  width: 155px;
+  height: 155px;
+  left: 11%;
+}
+
+.ring-3 {
+  background-color: var(--red);
+  width: 105px;
+  height: 105px;
+  left: 16%;
+}
+
+.bullseye {
+  background-color: var(--yellow);
+  width: 55px;
+  height: 55px;
+  left: 24.5%;
+}
